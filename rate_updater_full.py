@@ -3,47 +3,45 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+# 支援幣種
 currencies = ['HKD', 'CNY', 'USD', 'TWD', 'JPY', 'KRW', 'EUR']
-mock_rates_from_hkd = {}
+mock_rates = {}
 
-# 從 yoyorate.com 爬出 HKD 兌換其他幣種的匯率
-url = 'https://www.yoyorate.com/hkd'
-res = requests.get(url)
-res.encoding = 'utf-8'
-soup = BeautifulSoup(res.text, 'html.parser')
+# 1. 從 yoyorate.com 爬取 HKD 對其他幣種的匯率
+url = "https://www.yoyorate.com/hkd"
+resp = requests.get(url, timeout=10)
+resp.encoding = "utf-8"
+soup = BeautifulSoup(resp.text, "html.parser")
 
-table = soup.find('table', class_='table table-sm table-hover')
-rows = table.find_all('tr')[1:]  # Skip header
-
+rows = soup.select("table tr")[1:]
 for row in rows:
-    cols = row.find_all('td')
-    if len(cols) >= 2:
-        code = cols[0].text.strip()
+    cols = row.text.strip().split()
+    if len(cols) >= 3:
+        code = cols[0]
         try:
-            rate = float(cols[1].text.strip())
+            rate = float(cols[2])
+            if code in currencies and code != "HKD":
+                mock_rates[code] = rate
         except:
             continue
-        if code in currencies and code != 'HKD':
-            mock_rates_from_hkd[code] = rate
 
-# 人民幣等於自己
-mock_rates_from_hkd['HKD'] = 1.0
+# 加入 HKD 自己
+mock_rates["HKD"] = 1.0
 
-# 建立完整 7x7 匯率矩陣
-rates = {}
+# 2. 建立 7x7 匯率矩陣
+matrix = {}
 for base in currencies:
-    rates[base] = {}
+    matrix[base] = {}
     for target in currencies:
         if base == target:
-            rates[base][target] = 1.0
+            matrix[base][target] = 1.0
         else:
             try:
-                # A-B = A-HKD x HKD-B
-                rate = (1 / mock_rates_from_hkd[base]) * mock_rates_from_hkd[target]
-                rates[base][target] = round(rate, 6)
+                rate = mock_rates[target] / mock_rates[base]
+                matrix[base][target] = round(rate, 6)
             except:
-                rates[base][target] = 0.0
+                matrix[base][target] = 0.0
 
-# 寫入 public/rates.json
+# 3. 寫入 public/rates.json
 with open("public/rates.json", "w", encoding="utf-8") as f:
-    json.dump(rates, f, ensure_ascii=False, indent=2)
+    json.dump(matrix, f, ensure_ascii=False, indent=2)
