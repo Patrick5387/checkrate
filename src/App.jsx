@@ -20,7 +20,7 @@ export default function App() {
     if (fromCurrency === toCurrency) {
       setRate(1);
     } else {
-      fetch(`https://api.exchangerate.host/latest?base=${fromCurrency}&symbols=${toCurrency}`)
+      fetch(`https://cors.bridged.cc/https://api.exchangerate.host/latest?base=${fromCurrency}&symbols=${toCurrency}`)
         .then((res) => res.json())
         .then((data) => {
           const r = data.rates?.[toCurrency] ?? 0;
