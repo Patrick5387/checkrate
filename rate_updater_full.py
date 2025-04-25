@@ -1,11 +1,9 @@
 import json
 from datetime import datetime
-from bs4 import BeautifulSoup
-import requests
 
 currencies = ['HKD', 'CNY', 'USD', 'TWD', 'JPY', 'KRW', 'EUR']
 
-# 根據 yoyorate 或其他來源模擬的部分匯率（以 HKD 為 base）
+# 模擬以 HKD 為 base 的實際找換店匯率
 mock_rates = {
     "HKD": {
         "CNY": 0.92,
@@ -17,34 +15,35 @@ mock_rates = {
     }
 }
 
-# 自己兌自己 = 1.0
-for c in currencies:
-    if c not in mock_rates:
-        mock_rates[c] = {}
-    mock_rates[c][c] = 1.0
+# 初始化所有幣種為空 dict，並設自己兌自己為 1.0
+for base in currencies:
+    if base not in mock_rates:
+        mock_rates[base] = {}
+    mock_rates[base][base] = 1.0
 
-# 補完 HKD 雙向兌換率
-for target, rate in mock_rates["HKD"].items():
-    if target not in mock_rates:
-        mock_rates[target] = {}
-    mock_rates[target]["HKD"] = round(1 / rate, 6)
+# 建立 HKD 雙向反推（補完其他→HKD）
+for to_currency, rate in mock_rates["HKD"].items():
+    if to_currency not in mock_rates:
+        mock_rates[to_currency] = {}
+    mock_rates[to_currency]["HKD"] = round(1 / rate, 6)
 
-# 推算其他幣種之間的兌換率 A→B = A→HKD × HKD→B
+# 用 HKD 為中介推導所有 A→B 匯率
 for base in currencies:
     for target in currencies:
         if base == target:
             continue
-        if (
-            base in mock_rates and
-            "HKD" in mock_rates[base] and
-            target in mock_rates["HKD"]
-        ):
-            try:
-                rate = mock_rates[base]["HKD"] * mock_rates["HKD"][target]
-                mock_rates[base][target] = round(rate, 6)
-            except:
-                pass
+        try:
+            # 若 base→HKD 與 HKD→target 都有數值，就計出 base→target
+            if (
+                "HKD" in mock_rates[base] and
+                target in mock_rates["HKD"]
+            ):
+                mock_rates[base][target] = round(
+                    mock_rates[base]["HKD"] * mock_rates["HKD"][target], 6
+                )
+        except Exception as e:
+            pass
 
-# 寫入 JSON
+# 寫入 JSON 檔案
 with open("public/rates.json", "w", encoding="utf-8") as f:
     json.dump(mock_rates, f, ensure_ascii=False, indent=2)
