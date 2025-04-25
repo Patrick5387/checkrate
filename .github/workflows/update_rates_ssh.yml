@@ -1,0 +1,40 @@
+name: Auto Update Rates (with SSH)
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run rate updater script
+        run: python rate_updater_full.py
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ACTIONS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Commit and push updated rates.json
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add public/rates.json
+          git commit -m "🔄 Update rates.json (SSH)" || echo "No changes to commit"
+          git push origin main
