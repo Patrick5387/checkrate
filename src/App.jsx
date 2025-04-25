@@ -10,7 +10,7 @@ export default function App() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch("/data/rates.json")
+    fetch("/rates.json")
       .then((res) => res.json())
       .then((data) => {
         setRatesData(data);
