@@ -20,10 +20,10 @@ export default function App() {
     if (fromCurrency === toCurrency) {
       setRate(1);
     } else {
-      fetch(`https://cors.bridged.cc/https://api.exchangerate.host/latest?base=${fromCurrency}&symbols=${toCurrency}`)
+      fetch(`/api/rate?base=${fromCurrency}&target=${toCurrency}`)
         .then((res) => res.json())
         .then((data) => {
-          const r = data.rates?.[toCurrency] ?? 0;
+          const r = data.rate ?? 0;
           setRate(r);
         });
     }
@@ -83,7 +83,7 @@ export default function App() {
       </div>
 
       <div className="bg-gray-100 p-3 mt-6 rounded text-sm text-center text-gray-400">
-        ⓘ 匯率來自 exchangerate.host API<br />
+        ⓘ 匯率透過 Vercel proxy API 串接 exchangerate.host<br />
         📢 廣告位 / Ad Placeholder
       </div>
     </div>
