@@ -1,39 +1,42 @@
 import json
 from datetime import datetime
+from bs4 import BeautifulSoup
+import requests
 
-# 以下內容為模擬真實爬蟲資料產出（正式版本可加入 requests + BeautifulSoup）
-output = {
-    "update_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    "rates": {
-        "HKD": {"USD": 0.128, "JPY": 19.3, "CNY": 0.91, "KRW": 167.5, "EUR": 0.116, "TWD": 4.1},
-        "USD": {"HKD": 7.82, "JPY": 151.8, "EUR": 0.92, "CNY": 7.2},
-        "CNY": {"HKD": 1.09, "USD": 0.139},
-        "JPY": {"HKD": 0.0518},
-        "KRW": {"HKD": 0.0059},
-        "EUR": {"HKD": 8.58},
-        "TWD": {"HKD": 0.243}
-    },
-    "hk_shops": [
-        {
-            "name": "永昌找換（旺角）",
-            "rates": {"USD": 0.127, "JPY": 19.2, "EUR": 0.115, "KRW": 166, "TWD": 4.0}
-        },
-        {
-            "name": "金龍找換（尖沙咀）",
-            "rates": {"USD": 0.128, "JPY": 19.3, "EUR": 0.116, "KRW": 167, "TWD": 4.1}
-        }
-    ],
-    "cards": [
-        {"name": "Visa（渣打）", "rates": {"USD": 0.126, "JPY": 19.0, "EUR": 0.114}},
-        {"name": "Mastercard（匯豐）", "rates": {"USD": 0.127, "JPY": 19.1, "EUR": 0.115}}
-    ],
-    "airports": [
-        {"name": "東京成田機場", "rates": {"HKD": 14.5, "USD": 0.125, "JPY": 18.9}},
-        {"name": "首爾仁川機場", "rates": {"HKD": 14.8, "USD": 0.126, "KRW": 158}}
-    ]
+# 7 種主要貨幣
+currencies = ['HKD', 'CNY', 'USD', 'TWD', 'JPY', 'KRW', 'EUR']
+
+# 模擬從 yoyorate 或其他來源獲得部分匯率（例：HKD 為 base）
+mock_rates = {
+    "HKD": {
+        "CNY": 0.92,
+        "USD": 0.13,
+        "TWD": 4.2,
+        "JPY": 19.3,
+        "KRW": 170.8,
+        "EUR": 0.12
+    }
 }
 
-with open("public/rates.json", "w", encoding="utf-8") as f:
-    json.dump(output, f, ensure_ascii=False, indent=2)
+# 自己兌自己設為 1
+for c in currencies:
+    if c not in mock_rates:
+        mock_rates[c] = {}
+    mock_rates[c][c] = 1.0
 
-print("✅ 匯率已更新並寫入 public/rates.json")
+# 利用 HKD 為中介推導其餘幣種之間的兌換率
+for base in currencies:
+    for target in currencies:
+        if base == target:
+            continue
+        if base in mock_rates and target in mock_rates["HKD"] and base in mock_rates["HKD"]:
+            try:
+                # A→C = (A→HKD) * (HKD→C)
+                rate = mock_rates["HKD"][target] / mock_rates["HKD"][base]
+                mock_rates[base][target] = round(rate, 4)
+            except:
+                pass
+
+# 輸出 JSON
+with open("public/rates.json", "w", encoding="utf-8") as f:
+    json.dump(mock_rates, f, ensure_ascii=False, indent=2)
