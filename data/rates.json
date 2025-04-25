@@ -1,0 +1,62 @@
+{
+  "update_time": "2025-04-25 14:30",
+  "rates": {
+    "HKD": {
+      "JPY": 19.3,
+      "CNY": 0.91,
+      "USD": 0.128
+    },
+    "CNY": {
+      "HKD": 1.09,
+      "USD": 0.14
+    }
+  },
+  "hk_shops": [
+    {
+      "name": "永昌找換",
+      "rates": {
+        "JPY": 19.2,
+        "USD": 0.127
+      }
+    },
+    {
+      "name": "金龍找換",
+      "rates": {
+        "JPY": 19.3,
+        "USD": 0.128
+      }
+    }
+  ],
+  "cards": [
+    {
+      "name": "Visa",
+      "rates": {
+        "JPY": 19.0,
+        "USD": 0.127
+      }
+    },
+    {
+      "name": "Mastercard",
+      "rates": {
+        "JPY": 19.1,
+        "USD": 0.128
+      }
+    }
+  ],
+  "airports": [
+    {
+      "name": "東京成田機場",
+      "rates": {
+        "HKD": 14.5,
+        "USD": 0.125
+      }
+    },
+    {
+      "name": "首爾仁川機場",
+      "rates": {
+        "HKD": 14.8,
+        "USD": 0.126
+      }
+    }
+  ]
+}
