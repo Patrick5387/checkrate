@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto text-center space-y-6">
-      <h1 className="text-3xl font-bold text-blue-700">CheckRate - 點兌匯率工具</h1>
+      <h1 className="text-3xl font-bold text-blue-700">CheckRate - 點checkrate匯率工具</h1>
       <p className="text-sm text-gray-500">
         查實時匯率・找換店・機場與信用卡兌換比較
       </p>
@@ -89,7 +89,7 @@ export default function App() {
       )}
 
       <div className="text-xs text-gray-400 mt-6">
-        ⓘ 匯率資料每 15 分鐘更新．僅供參考．Demo data only
+        ⓘ 匯率資料每 15 分鐘更新．僅供參考．copyright by checkrate.app
       </div>
     </div>
   );
