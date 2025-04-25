@@ -1,1 +1,36 @@
+name: Auto Update Rates (with Push)
 
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run rate updater script
+        run: python rate_updater_full.py
+
+      - name: Commit and push updated rates.json
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+          git add public/rates.json
+          git commit -m "🔄 Update rates.json (auto)" || echo "No changes"
+          git push
