@@ -3,10 +3,9 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 import requests
 
-# 7 種主要貨幣
 currencies = ['HKD', 'CNY', 'USD', 'TWD', 'JPY', 'KRW', 'EUR']
 
-# 模擬從 yoyorate 或其他來源獲得部分匯率（例：HKD 為 base）
+# 模擬從 yoyorate 或其他來源獲得的部分匯率（以 HKD 為 base）
 mock_rates = {
     "HKD": {
         "CNY": 0.92,
@@ -18,25 +17,30 @@ mock_rates = {
     }
 }
 
-# 自己兌自己設為 1
+# 自己兌自己 = 1.0
 for c in currencies:
     if c not in mock_rates:
         mock_rates[c] = {}
     mock_rates[c][c] = 1.0
 
-# 利用 HKD 為中介推導其餘幣種之間的兌換率
+# 補完 HKD 雙向兌換率
+for target, rate in mock_rates["HKD"].items():
+    if target not in mock_rates:
+        mock_rates[target] = {}
+    mock_rates[target]["HKD"] = round(1 / rate, 6)
+
+# 推算其他幣種之間的兌換率 A→B = A→HKD × HKD→B
 for base in currencies:
     for target in currencies:
         if base == target:
             continue
         if base in mock_rates and target in mock_rates["HKD"] and base in mock_rates["HKD"]:
             try:
-                # A→C = (A→HKD) * (HKD→C)
-                rate = mock_rates["HKD"][target] / mock_rates["HKD"][base]
-                mock_rates[base][target] = round(rate, 4)
+                rate = mock_rates[base]["HKD"] * mock_rates["HKD"][target]
+                mock_rates[base][target] = round(rate, 6)
             except:
                 pass
 
-# 輸出 JSON
+# 寫入 JSON
 with open("public/rates.json", "w", encoding="utf-8") as f:
     json.dump(mock_rates, f, ensure_ascii=False, indent=2)
