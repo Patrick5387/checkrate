@@ -5,7 +5,7 @@ import requests
 
 currencies = ['HKD', 'CNY', 'USD', 'TWD', 'JPY', 'KRW', 'EUR']
 
-# 模擬從 yoyorate 或其他來源獲得的部分匯率（以 HKD 為 base）
+# 根據 yoyorate 或其他來源模擬的部分匯率（以 HKD 為 base）
 mock_rates = {
     "HKD": {
         "CNY": 0.92,
@@ -34,7 +34,11 @@ for base in currencies:
     for target in currencies:
         if base == target:
             continue
-        if base in mock_rates and target in mock_rates["HKD"] and base in mock_rates["HKD"]:
+        if (
+            base in mock_rates and
+            "HKD" in mock_rates[base] and
+            target in mock_rates["HKD"]
+        ):
             try:
                 rate = mock_rates[base]["HKD"] * mock_rates["HKD"][target]
                 mock_rates[base][target] = round(rate, 6)
