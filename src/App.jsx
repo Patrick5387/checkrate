@@ -11,16 +11,6 @@ export default function App() {
     EUR: "歐元 EUR"
   };
 
-  const fakeRates = {
-    HKD: { USD: 0.127, JPY: 19.3, TWD: 4.1, KRW: 172, EUR: 0.116, CNY: 0.92 },
-    USD: { HKD: 7.85, JPY: 152, EUR: 0.91, TWD: 32.1, KRW: 1350, CNY: 7.2 },
-    JPY: { HKD: 0.052, USD: 0.0066 },
-    CNY: { HKD: 1.09, USD: 0.139 },
-    TWD: { HKD: 0.24, USD: 0.031 },
-    KRW: { HKD: 0.0058 },
-    EUR: { HKD: 8.6 }
-  };
-
   const [amount, setAmount] = useState(1000);
   const [fromCurrency, setFromCurrency] = useState("HKD");
   const [toCurrency, setToCurrency] = useState("JPY");
@@ -30,8 +20,12 @@ export default function App() {
     if (fromCurrency === toCurrency) {
       setRate(1);
     } else {
-      const r = fakeRates[fromCurrency]?.[toCurrency] || 0;
-      setRate(r);
+      fetch(`https://api.exchangerate.host/latest?base=${fromCurrency}&symbols=${toCurrency}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const r = data.rates?.[toCurrency] ?? 0;
+          setRate(r);
+        });
     }
   }, [fromCurrency, toCurrency]);
 
@@ -89,7 +83,7 @@ export default function App() {
       </div>
 
       <div className="bg-gray-100 p-3 mt-6 rounded text-sm text-center text-gray-400">
-        ⓘ 此為模擬匯率資料 | Demo rates only<br />
+        ⓘ 匯率來自 exchangerate.host API<br />
         📢 廣告位 / Ad Placeholder
       </div>
     </div>
