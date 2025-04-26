@@ -42,11 +42,9 @@ export default function App() {
 
         <label>
           輸入幣種 / From:
-          <select className="w-full border rounded px-3 py-2 mt-1" value={from} onChange={(e) => setFrom(e.target.value)}>
-            {["HKD", "CNY", "USD", "JPY", "KRW", "EUR", "TWD"].map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+          <div className="w-full border rounded px-3 py-2 mt-1 bg-gray-100 text-gray-600">
+            港幣 HKD
+          </div>
         </label>
 
         <label>
