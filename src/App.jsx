@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto text-center space-y-6">
-      <h1 className="text-3xl font-bold text-blue-700">CheckRate - 點兌匯率工具</h1>
+      <h1 className="text-3xl font-bold text-blue-700">CheckRate - 去旅行前check下匯率工具</h1>
       <p className="text-sm text-gray-500">
         查實時匯率・找換店・機場與信用卡兌換比較
       </p>
@@ -41,7 +41,7 @@ export default function App() {
         </label>
 
         <label>
-          輸入幣種 / From:
+          幣種 / From:
           <div className="w-full border rounded px-3 py-2 mt-1 bg-gray-100 text-gray-600">
             港幣 HKD
           </div>
@@ -87,7 +87,7 @@ export default function App() {
       )}
 
       <div className="text-xs text-gray-400 mt-6">
-        ⓘ 匯率資料每 15 分鐘更新．僅供參考．Copyright by checkrate
+        ⓘ 匯率資料每日9am, 2pm, 5pm 更新．由國際貨幣網實時更新．僅供參考．Copyright by checkrate
       </div>
     </div>
   );
