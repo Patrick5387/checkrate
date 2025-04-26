@@ -2,8 +2,8 @@ name: Auto Update Rates
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # 每 15 分鐘
-  workflow_dispatch:        # 可手動執行
+    - cron: '0 1,6,9 * * *'   # 香港時間 9am, 2pm, 5pm
+  workflow_dispatch:         # 可手動執行
 
 jobs:
   update:
