@@ -89,7 +89,7 @@ export default function App() {
       )}
 
       <div className="text-xs text-gray-400 mt-6">
-        ⓘ 匯率資料每 15 分鐘更新．僅供參考．Demo data only
+        ⓘ 匯率資料每 15 分鐘更新．僅供參考．Copyright by checkrate
       </div>
     </div>
   );
